@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="VeiculoV">
+	
+	<resultMap id="result" type="VeiculoC">
+	    <result property="id" column="id"/>
+	    <result property="placa" column="placa"/>
+	    <result property="renavam" column="renavam"/>
+	    <association property="proprietario" javaType="Proprietario">
+		    <result property="id" column="pid"/>
+		    <result property="cpf_cnpj" column="cpf_cnpj"/>
+		    <result property="nome" column="nome"/>
+	    </association>
+    </resultMap>
+	
+    <select id="getAll" resultMap="result">
+    	select v.id,placa,renavam,p.id as pid,p.cpf_cnpj,p.nome from veiculo v join proprietario p on v.id_prop =p.id order by v.id
+    </select>
+    
+    <select id="getById" parameterType="int" resultMap="result">
+    	select v.id, placa, renavam, id_prop, p.id as pid,nome from veiculo v join proprietario p on v.id_prop=p.id where v.id = #{id}
+  	</select>
+    
+    <delete id="deleteById" parameterType="int">
+    	delete from veiculo where id = #{id};
+    </delete>
+
+    <insert id="insert" parameterType="VeiculoC" useGeneratedKeys="true" keyProperty="id">
+		insert into veiculo (placa,renavam,id_prop) values (#{placa},#{renavam},#{proprietario.id});
+    </insert>
+
+	<update id="update" parameterType="VeiculoC">
+	update veiculo
+	set
+		placa = #{placa},
+		renavam = #{renavam},
+		id_prop = #{proprietario.id}
+		where id = #{id};
+  </update>
+
+</mapper>
